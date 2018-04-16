@@ -1,4 +1,3 @@
 built/*
 Debug/*
-libraries/*
-PortableUlamSpiral.exe
+libraries/boost/*
