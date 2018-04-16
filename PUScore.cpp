@@ -9,21 +9,19 @@
 #define __x86_64 1 //(also __x86_64__)
 #define __amd64 1 //(also __amd64__)
 
-//#include ".hpp"
+//unistd.h is required for the getopt function
+#include <unistd.h>
 
+//required for the boost float 128
+#include <quadmath.h>
+//very precision float for shading
+#include <boost/multiprecision/float128.hpp>
+/*
+	boost::multiprecision::float128 variableName;
+*/
 
-//#include "BigBadLib_Full.h"
-//#include "BigBadLib_CSC.h"
-//#include "EasyBMP.h"
-//#include "EasyBMP_Font.h"
-//#include "EasyBMP_Geometry.h"
-//#include "EasyBMP_SimpleArray.h"
-
-//#include <quadmath.h>
-//Needed for more than just float128
-
-
-//#include <boost/multiprecision/cpp_int.hpp>
+//Needed for absoluly huge resolution images (This program should have no problems generating over 100x gigapixel images)
+#include <boost/multiprecision/cpp_int.hpp>
 /*
 	// Fixed precision unsigned inegers:
 		boost::multiprecision::cpp_int::uint128_t
@@ -35,12 +33,6 @@
 		boost::multiprecision::cpp_int::int256_t
 		boost::multiprecision::cpp_int::int512_t
 		boost::multiprecision::cpp_int::int1024_t
-*/
-
-
-//#include <boost\multiprecision\float128.hpp>
-/*
-	boost::multiprecision::float128 variableName;
 */
 
 
@@ -172,7 +164,7 @@
 */
 
 
-//#include <cstdint>
+#include <cstdint>
 //All of this library is c++11 and requires compiler support
 /*
 	C++11
@@ -384,8 +376,8 @@
 	}
 */
 
-
-//#include <string>
+#include <cstring>
+#include <string>
 /*
 	real strings
 	cstringvariable = stringVariableName.c_str();
@@ -515,23 +507,83 @@ using namespace std;
 
 
 int main (int argc, char* argv[]){
-string input;
+	
+
+	extern char *optarg;
+	extern int optind;
+	while ((c = getopt(argc, argv, "df:mps:")) != -1){
+		switch (c) {
+		case 'd':
+			debug = 1;
+			break;
+		case 'm':
+			mflag = 1;
+			break;
+		case 'p':
+			pflag = 1;
+			break;
+		case 'f':
+			fflag = 1;
+			fname = optarg;
+			break;
+		case 's':
+			sname = optarg;
+			break;
+		case '?':
+			err = 1;
+			break;
+		}
+	}
+
+	Variable: int optopt
+	When getopt encounters an unknown option character or an option with a missing required argument, it stores that option character in this variable. You can use this for providing your own diagnostic messages.
+
+	Variable: int optind
+	This variable is set by getopt to the index of the next element of the argv array to be processed. Once getopt has found all of the option arguments, you can use this variable to determine where the remaining non-option arguments begin. The initial value of this variable is 1.
+
+	Variable: char * optarg
+	This variable is set by getopt to point at the value of the option argument, for those options that accept arguments.
+
+	Function: int getopt (int argc, char *const *argv, const char *options)
+	Preliminary: | MT-Unsafe race:getopt env | AS-Unsafe heap i18n lock corrupt | AC-Unsafe mem lock corrupt | See POSIX Safety Concepts.
+
+	The getopt function gets the next option argument from the argument list specified by the argv and argc arguments. Normally these values come directly from the arguments received by main.
+
+	The options argument is a string that specifies the option characters that are valid for this program. An option character in this string can be followed by a colon (‘:’) to indicate that it takes a required argument. If an option character is followed by two colons (‘::’), its argument is optional; this is a GNU extension.
+
+	getopt has three ways to deal with options that follow non-options argv elements. The special argument ‘--’ forces in all cases the end of option scanning.
+
+	The default is to permute the contents of argv while scanning it so that eventually all the non-options are at the end. This allows options to be given in any order, even with programs that were not written to expect this.
+	If the options argument string begins with a hyphen (‘-’), this is treated specially. It permits arguments that are not options to be returned as if they were associated with option character ‘\1’.
+	POSIX demands the following behavior: the first non-option stops option processing. This mode is selected by either setting the environment variable POSIXLY_CORRECT or beginning the options argument string with a plus sign (‘+’).
+	The getopt function returns the option character for the next command line option. When no more option arguments are available, it returns -1. There may still be more non-option arguments; you must compare the external variable optind against the argc parameter to check this.
+
+	If the option has an argument, getopt returns the argument by storing it in the variable optarg. You don’t ordinarily need to copy the optarg string, since it is a pointer into the original argv array, not into a static area that might be overwritten.
+
+	If getopt finds an option character in argv that was not included in options, or a missing option argument, it returns ‘?’ and sets the external variable optopt to the actual option character. If the first character of options is a colon (‘:’), then getopt returns ‘:’ instead of ‘?’ to indicate a missing option argument. In addition, if the external variable opterr is nonzero (which is the default), getopt prints an error message.
+
+
+boost::multiprecision::float128 variableName;
 
 
 
-	do{
-		cout << "" << endl;
-		cout << "" << endl;
-		cout << "" << endl;
-		cin >> input;
-		cin.clear();
-		cin.ignore();
-	}while(cin.fail());
+	for (long i = 1; i < argc; i++) {
+		if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0 ) {
 
-cout << input;
+
+
+		}
+	}
+	//TODO: Add launch by commandline argument(s) option
+	//NOTE: Arguments: resolution or max value, res/maxval, output filename, shadded or discrete,
+
+	//Deal with arguments here..
+
+
+
 
 
 	cout << "Press enter to close program..." << endl;
 	cin.ignore();
-	return 0;
+	return EXIT_SUCCESS;
 }
