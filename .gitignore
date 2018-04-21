@@ -2,3 +2,4 @@ built/*
 Debug/*
 libraries/boost/*
 *.o
+PUScore.o
