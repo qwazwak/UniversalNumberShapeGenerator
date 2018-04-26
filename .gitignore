@@ -1,3 +1,8 @@
 built/*
 Debug/*
 libraries/boost/*
+libraries/gmp/*
+PortableUlamSpiral_TestingBuild.exe
+PortableUlamSpiral_ReleaseBuild.exe
+PortableUlamSpiral.exe
+PortableUlamSpiral.exe

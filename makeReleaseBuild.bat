@@ -8,6 +8,6 @@ rem g++ -O3 -g3 -Wall -c .cpp -std=gnu++17
 
 
 rem for any new cpp files, make sure to add them to the compile list
-g++ -O3 -g3 -Wall -o PortableUlamSpiral.exe PUScore.o -std=gnu++17
-PortableUlamSpiral.exe
+g++ -O3 -g3 -Wall -o PortableUlamSpiral_ReleaseBuild.exe PUScore.o -std=gnu++17
+PortableUlamSpiral_ReleaseBuild.exe
 pause
