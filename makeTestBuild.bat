@@ -4,11 +4,11 @@ rem But, if you know what you are doing, or if you don't it's not very hard, it 
 rem If anybody comes across this with the ability to make a cmake file for this, please do!
 
 g++ -std=gnu++17 -Ilibraries -O0 -g3 -Wall -c PUScore.cpp
-g++ -std=gnu++17 -Ilibraries -O0 -g3 -Wall -c libraries/pngwriter.cc
+g++ -std=gnu++17 -Ilibraries -O0 -g3 -Wall -c functions.cpp
 rem g++ -std=gnu++17 -Ilibraries -O0 -g3 -Wall -c FILE.cpp
 
 
 rem for any new cpp files, make sure to add them to the compile list
-g++ -std=gnu++17 -O0 -g3 -Wall -o PortableUlamSpiral_TestingBuild.exe PUScore.o libraries/pngwriter.o
+g++ -std=gnu++17 -O0 -g3 -Wall -o PortableUlamSpiral_TestingBuild.exe PUScore.o functions.o
 PortableUlamSpiral_TestingBuild.exe
 pause
