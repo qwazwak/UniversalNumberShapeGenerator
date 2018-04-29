@@ -1,6 +1,6 @@
 const int NUM_OF_TESTS = 16;
 
-#include "functions.hpp"
+//#include "functions.hpp"
 
 
 //Current file writing library
@@ -67,36 +67,21 @@ const int NUM_OF_TESTS = 16;
 
 using namespace std;
 
-bool isPrime (uint_fast64_t input) {
-	random_device realRandom;
-	uint_fast64_t seed = time(NULL);
-	if (realRandom.entropy() != 0) {
-		seed = realRandom();
-	}
-	mt19937_64 primeTesterGenerator(seed);
-
-	if (input % 2 == 0) {
-		return false;
-	}
-	else
-	if(boost::multiprecision::miller_rabin_test(input, NUM_OF_TESTS, primeTesterGenerator) == false){
-		return false;
-	}
-	else{
-		for (uint_fast64_t i = 0; i < static_cast<uint_fast64_t>(ceil(sqrt(static_cast<boost::multiprecision::float128>(input)))); i++) {
-			if (static_cast<boost::multiprecision::float128>(input) / static_cast<boost::multiprecision::float128>(i) == ceil(static_cast<boost::multiprecision::float128>(input) / static_cast<boost::multiprecision::float128>(i))) {
-				PRIME
-			}
-		}
-	}
-
-}
-
 //Hardcoded max limit for pixel count, currently 50 Petapixels
 //const boost::multiprecision::cpp_int::int512_t MAXRES = 50000000000000000;
 int main (int argc, char* argv[]){
 	//Variable Creation
 		//variables created here are used all over
+		//Prime testing:
+			bool isPrime;
+			random_device realRandom;
+			uint_fast64_t seed = time(NULL);
+			if (realRandom.entropy() != 0) {
+				seed = realRandom();
+			}
+			mt19937_64 primeTesterGenerator(seed);
+
+
 		uint_fast64_t edgeResolution;
 
 		//Flags:
@@ -317,12 +302,27 @@ int main (int argc, char* argv[]){
 
 
 	mainImage.SetSize(edgeResolution, edgeResolution);
+	for (uint_fast64_t y = 0; y < edgeResolution; y++) {
+		for (uint_fast64_t x = 0; x < edgeResolution; x++) {
+			mainImage.SetPixel(y, x, whitePix);
+		}
+	}
+
+
+	uint_fast64_t currentLocVal = 1;
 	uint_fast64_t currentX = static_cast<uint_fast64_t>(ceil(static_cast<boost::multiprecision::float128>(edgeResolution / 2.0)));
 	uint_fast64_t currentY = static_cast<uint_fast64_t>(ceil(static_cast<boost::multiprecision::float128>(edgeResolution / 2.0)));
-	for (uint_fast64_t y = 0; y < edgeResolution; y++){
-		for (uint_fast64_t x = 0; x < edgeResolution; x++){
-
-			mainImage.SetPixel(y,x,pixelWriter);
+	while (currentX != (edgeResolution - 1) && currentY != (edgeResolution - 1)){
+		isPrime = false;
+		if (currentLocVal % 2 == 0 || boost::multiprecision::miller_rabin_test(currentLocVal, NUM_OF_TESTS, primeTesterGenerator) == false) {
+			continue;
+		}
+		else{
+			for (uint_fast64_t i = 0; i < static_cast<uint_fast64_t>(ceil(sqrt(static_cast<boost::multiprecision::float128>(currentLocVal)))); i++) {
+				if (static_cast<boost::multiprecision::float128>(currentLocVal) / static_cast<boost::multiprecision::float128>(i) == ceil(static_cast<boost::multiprecision::float128>(currentLocVal) / static_cast<boost::multiprecision::float128>(i))) {
+					mainImage.SetPixel(currentY, currentX, blackPix);
+				}
+			}
 		}
 	}
 	mainImage.WriteToFile(outputFileName.c_str());
