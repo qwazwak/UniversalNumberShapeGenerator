@@ -1,35 +1,32 @@
 const int NUM_OF_TESTS = 16;
 
-//#include "functions.hpp"
-
+#include "primeFinder.hpp"
+#include "matrixReshaper.hpp"
 
 //Current file writing library
 //#include <CImg\CImg.h>
-
 #include <EasyBMP/EasyBMP.h>
 
 //GUI engine:
 /*
-#include <imGUI/imgui.cpp>
 #include <imGUI/imgui.h>
-#include <imGUI/imgui_demo.cpp>
-#include <imGUI/imgui_draw.cpp>
-#include <imGUI/imgui_internal.h>
-#include <imGUI/imconfig.h>
-#include <imGUI/stb_rect_pack.h>
-#include <imGUI/stb_textedit.h>
-#include <imGUI/stb_truetype.h>
+//#include <imGUI/imgui_internal.h>
+//#include <imGUI/imconfig.h>
+//#include <imGUI/stb_rect_pack.h>
+//#include <imGUI/stb_textedit.h>
+//#include <imGUI/stb_truetype.h>
 */
 
-#include <boost/multiprecision/miller_rabin.hpp>
 
 
 //getopt.h is required for the getopt function
 #include <getopt.h>
-
+//Large size variables
 #include <quadmath.h> //required for the boost float 128
-#include <gmp.h>
-#include <boost/multiprecision/gmp.hpp> //Sister to cppint, but floating, also fixes some of cppint's erros
+
+//#include <gmp.h>
+//#include <boost/multiprecision/gmp.hpp> //Sister to cppint, but floating, also fixes some of cppint's erros
+
 #include <boost/multiprecision/float128.hpp> //very precision float for shading
 //	boost::multiprecision::float128 variableName;
 #include <boost/multiprecision/cpp_int.hpp> //Needed for absoluly huge resolution images (This program should have no problems generating over 100x gigapixel images)
@@ -45,7 +42,6 @@ const int NUM_OF_TESTS = 16;
 
 
 
-//Idk if we actually need this.. but its so helpful
 #include <cstdlib>
 #include <random>
 
@@ -59,30 +55,24 @@ const int NUM_OF_TESTS = 16;
 
 //Libraries maybe needed, possibly for debug/logging
 //#include <time.h>
-//#include <fstream>
+#include <fstream>
 #include <ctime>
 
 
-
-
 using namespace std;
+
+
+
 
 //Hardcoded max limit for pixel count, currently 50 Petapixels
 //const boost::multiprecision::cpp_int::int512_t MAXRES = 50000000000000000;
 int main (int argc, char* argv[]){
 	//Variable Creation
 		//variables created here are used all over
-		//Prime testing:
-			bool isPrime;
-			random_device realRandom;
-			uint_fast64_t seed = time(NULL);
-			if (realRandom.entropy() != 0) {
-				seed = realRandom();
-			}
-			mt19937_64 primeTesterGenerator(seed);
 
 
-		uint_fast64_t edgeResolution;
+			uint_fast64_t edgeResolution;
+			uint_fast64_t numberOfNumbers;
 
 		//Flags:
 			bool enableDebugOutput = false;
@@ -93,7 +83,7 @@ int main (int argc, char* argv[]){
 
 		//File/Image Things:
 			BMP mainImage;
-			RGBApixel pixelWriter;
+			//RGBApixel pixelWriter;
 			RGBApixel blackPix;
 			RGBApixel whitePix;
 			blackPix.Red = 0;
@@ -104,7 +94,7 @@ int main (int argc, char* argv[]){
 			whitePix.Blue = 255;
 			whitePix.Green = 255;
 			whitePix.Alpha = 255;
-			pixelWriter.Alpha = 255;
+			//pixelWriter.Alpha = 255;
 			string inputDataFileName;
 			string outputFileName = "ulam_spiral.bmp";
 
@@ -200,7 +190,7 @@ int main (int argc, char* argv[]){
 						possibleEdgeResolution = static_cast<uint_fast64_t >(
 											ceil(
 												sqrt(
-													static_cast<boost::multiprecision::mpf_float_1000>(
+													static_cast<long double>(
 														atoi(optarg)
 													))));
 						if (possibleEdgeResolution % 2 == 0) {
@@ -278,6 +268,7 @@ int main (int argc, char* argv[]){
 									break;
 								default:
 									cout << "An unexpected error has occured, exiting program" << endl;
+									return EXIT_FAILURE;
 								break;
 							}
 
@@ -299,55 +290,55 @@ int main (int argc, char* argv[]){
 		} while (continueLoading == true);
 	}//End argument parsing
 
+	numberOfNumbers = edgeResolution * edgeResolution;
 
-
+	mainImage.SetBitDepth(24);
 	mainImage.SetSize(edgeResolution, edgeResolution);
+
+	cout << "PostBackground" << endl;
+
+	//bool * singlePrimalityAry = makeFindPrimes (numberOfNumbers, NUM_OF_TESTS);
+	//singleReverse_Bool (numberOfNumbers, singlePrimalityAry);
+	cout << "post reverse" << endl;
+	//bool ** doublePrimalityAry = single2D_Bool (edgeResolution, singlePrimalityAry);
+	bool ** doublePrimalityAry = make2DPrimes (edgeResolution, edgeResolution, NUM_OF_TESTS);
+	cout << "preSpiral" <<	 endl;
+
+	//stdToCCWSpiralBool4 (edgeResolution, doublePrimalityAry);
+	//stdToCCWSpiralBool2 (edgeResolution, doublePrimalityAry);
+
+
+	//stdToSpiralBool (edgeResolution, edgeResolution, doublePrimalityAry, false, false, false);
+
+	cout << "postSpiral" << endl;
+	cout << "preloop" << endl;
 	for (uint_fast64_t y = 0; y < edgeResolution; y++) {
 		for (uint_fast64_t x = 0; x < edgeResolution; x++) {
-			mainImage.SetPixel(y, x, whitePix);
-		}
-	}
-
-
-	uint_fast64_t currentLocVal = 1;
-	uint_fast64_t currentX = static_cast<uint_fast64_t>(ceil(static_cast<boost::multiprecision::float128>(edgeResolution / 2.0)));
-	uint_fast64_t currentY = static_cast<uint_fast64_t>(ceil(static_cast<boost::multiprecision::float128>(edgeResolution / 2.0)));
-	while (currentX != (edgeResolution - 1) && currentY != (edgeResolution - 1)){
-		isPrime = false;
-		if (currentLocVal % 2 == 0 || boost::multiprecision::miller_rabin_test(currentLocVal, NUM_OF_TESTS, primeTesterGenerator) == false) {
-			continue;
-		}
-		else{
-			for (uint_fast64_t i = 0; i < static_cast<uint_fast64_t>(ceil(sqrt(static_cast<boost::multiprecision::float128>(currentLocVal)))); i++) {
-				if (static_cast<boost::multiprecision::float128>(currentLocVal) / static_cast<boost::multiprecision::float128>(i) == ceil(static_cast<boost::multiprecision::float128>(currentLocVal) / static_cast<boost::multiprecision::float128>(i))) {
-					mainImage.SetPixel(currentY, currentX, blackPix);
-				}
+			if (doublePrimalityAry[y][x] == true) {
+				cout << "X";
+				mainImage.SetPixel(y, x, blackPix);
+			}
+			else {
+				cout << " ";
+				mainImage.SetPixel(y, x, whitePix);
 			}
 		}
+		cout << endl;
 	}
+	cout << "about to close" << endl;
+
+
+
 	mainImage.WriteToFile(outputFileName.c_str());
-
-	//TODO: everything
-	//NOTE: Arguments: resolution or max value, res/maxval, output filename, shadded or discrete,
-
-	//if (isShaded == false) {
-		mainImage.SetBitDepth(2);
-	//}
-
-
-	if (externalDataLoading == true) {
-		//TODO: set load external data
-		/* code */
+	cout << "File saved" << endl;
+	for (uint_fast64_t i = 0; i < edgeResolution; i++) {
+		delete[] doublePrimalityAry[i];
 	}
-	else {
-		//TODO: make the array with values in the spiral
-	}
-	//make image
-
-
-
-
+	delete[] doublePrimalityAry;
+	//delete[] singlePrimalityAry;
+	cout << "Program Ending" << endl;
 	cout << "Press enter to close program..." << endl;
 	cin.ignore();
-	return EXIT_SUCCESS;
+	//EXIT_SUCCESS
+	return 0;
 }
