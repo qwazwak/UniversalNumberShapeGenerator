@@ -302,6 +302,8 @@ int main (int argc, char* argv[]){
 	cout << "post reverse" << endl;
 	//bool ** doublePrimalityAry = single2D_Bool (edgeResolution, singlePrimalityAry);
 	bool ** doublePrimalityAry = make2DPrimes (edgeResolution, edgeResolution, NUM_OF_TESTS);
+	void print_spiral (int ** matrix, int edgeResolution)
+
 	cout << "preSpiral" <<	 endl;
 
 	//stdToCCWSpiralBool4 (edgeResolution, doublePrimalityAry);
